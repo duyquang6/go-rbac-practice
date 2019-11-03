@@ -1,28 +1,43 @@
 package services
 
 import (
-	"context"
-	"log"
+	"github.com/google/wire"
+	"github.com/sirupsen/logrus"
 	"net/http"
+	"todolist-facebook-chatbot/conf"
 	"todolist-facebook-chatbot/dtos"
+	"todolist-facebook-chatbot/models"
+	"todolist-facebook-chatbot/repositories"
 )
 
 // Task services
-type TaskService interface {
-	Create(ctx context.Context, request *dtos.CreateTaskRequest) (*dtos.CreateTaskResponse, error)
+type ITaskService interface {
+	Create(request *dtos.CreateTaskRequest) (*dtos.CreateTaskResponse, error)
 }
 
-type taskService struct {
+var provideSet = wire.NewSet(conf.NewAppConfig, repositories.NewResource, repositories.NewTaskRepository, NewTaskService)
+
+type TaskService struct {
+	taskRepo repositories.TaskRepository
 }
 
-// NewNtfService returns a new instance of Merchant QR Service.
-func NewTaskService() TaskService {
-	return &taskService{}
+func NewTaskService(taskRepo repositories.TaskRepository) (*TaskService, error) {
+	return &TaskService{
+		taskRepo: taskRepo,
+	}, nil
 }
 
-func (t taskService) Create(ctx context.Context, request *dtos.CreateTaskRequest) (*dtos.CreateTaskResponse, error) {
-	log.Println("Creating Task")
-
+func (t TaskService) Create(request *dtos.CreateTaskRequest) (*dtos.CreateTaskResponse, error) {
+	logrus.Println("Creating Task")
+	err := t.taskRepo.Create(&models.Task{
+		Title:       request.Title,
+		Description: request.Description,
+		StartAt:     request.StartAt,
+		EndAt:       request.EndAt,
+	})
+	if err != nil {
+		logrus.Fatalln("Error when creating task", err)
+	}
 	return &dtos.CreateTaskResponse{
 		Meta: dtos.NewMeta(http.StatusOK),
 	}, nil

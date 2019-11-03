@@ -3,10 +3,10 @@ package dtos
 import "time"
 
 type CreateTaskRequest struct {
-	Title string
-	Description string
-	StartAt time.Time
-	EndAt time.Time
+	Title string `json:"title"`
+	Description string `json:"description"`
+	StartAt time.Time `json:"startAt"`
+	EndAt time.Time `json:"endAt"`
 }
 
 type CreateTaskResponse struct {
