@@ -48,3 +48,14 @@ func createTask(taskService *services.TaskService) func(c *gin.Context) {
 		ctx.JSON(http.StatusOK, res)
 	}
 }
+
+func getAllTasks(taskService *services.TaskService) func(c *gin.Context) {
+	return func(ctx *gin.Context) {
+		res, err := taskService.GetAll(&body)
+		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusOK, res)
+	}
+}

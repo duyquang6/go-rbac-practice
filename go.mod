@@ -3,6 +3,7 @@ module todolist-facebook-chatbot
 go 1.13
 
 require (
+	github.com/duyquang6/go-xss-filter v0.0.0-20191103093916-89a066b378df // indirect
 	github.com/ekyoung/gin-nice-recovery v0.0.0-20160510022553-1654dca486db
 	github.com/gin-contrib/gzip v0.0.1
 	github.com/gin-gonic/gin v1.4.0

@@ -4,8 +4,10 @@ import (
 	"github.com/google/wire"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"time"
 	"todolist-facebook-chatbot/conf"
 	"todolist-facebook-chatbot/dtos"
+	"todolist-facebook-chatbot/events"
 	"todolist-facebook-chatbot/models"
 	"todolist-facebook-chatbot/repositories"
 )
@@ -38,6 +40,26 @@ func (t TaskService) Create(request *dtos.CreateTaskRequest) (*dtos.CreateTaskRe
 	if err != nil {
 		logrus.Fatalln("Error when creating task", err)
 	}
+	return &dtos.CreateTaskResponse{
+		Meta: dtos.NewMeta(http.StatusOK),
+	}, nil
+}
+
+func (t TaskService) GetAllTasks(request *dtos.CreateTaskRequest) (*dtos.CreateTaskResponse, error) {
+	logrus.Println("Creating Task")
+	err := t.taskRepo.Create(&models.Task{
+		Title:       request.Title,
+		Description: request.Description,
+		StartAt:     request.StartAt,
+		EndAt:       request.EndAt,
+	})
+	if err != nil {
+		logrus.Fatalln("Error when creating task", err)
+	}
+	events.TaskCreated.Trigger(events.TaskCreatedPayload{
+		Email: "nguyenduyquang06@gmail.com",
+		Time:  time.Now(),
+	})
 	return &dtos.CreateTaskResponse{
 		Meta: dtos.NewMeta(http.StatusOK),
 	}, nil
