@@ -1,15 +1,12 @@
 package services
 
 import (
-	"github.com/google/wire"
 	"github.com/sirupsen/logrus"
 	"net/http"
-	"time"
+	"todolist-facebook-chatbot/adapters/kafka"
 	"todolist-facebook-chatbot/conf"
 	"todolist-facebook-chatbot/dtos"
-	"todolist-facebook-chatbot/events"
 	"todolist-facebook-chatbot/models"
-	"todolist-facebook-chatbot/repositories"
 )
 
 // Task services
@@ -17,50 +14,60 @@ type ITaskService interface {
 	Create(request *dtos.CreateTaskRequest) (*dtos.CreateTaskResponse, error)
 }
 
-var provideSet = wire.NewSet(conf.NewAppConfig, repositories.NewResource, repositories.NewTaskRepository, NewTaskService)
-
-type TaskService struct {
-	taskRepo repositories.TaskRepository
+type taskService struct {
+	kafkaAdapt kafka.ProducerV2
+	config     conf.AppConfig
 }
 
-func NewTaskService(taskRepo repositories.TaskRepository) (*TaskService, error) {
-	return &TaskService{
-		taskRepo: taskRepo,
-	}, nil
+func NewTaskService(
+	kafkaAdapter kafka.ProducerV2,
+	config conf.AppConfig,
+) ITaskService {
+	return &taskService{
+		kafkaAdapt: kafkaAdapter,
+		config:     config,
+	}
 }
 
-func (t TaskService) Create(request *dtos.CreateTaskRequest) (*dtos.CreateTaskResponse, error) {
-	logrus.Println("Creating Task")
-	err := t.taskRepo.Create(&models.Task{
+func (t *taskService) Create(request *dtos.CreateTaskRequest) (*dtos.CreateTaskResponse, error) {
+	task := &models.Task{
 		Title:       request.Title,
 		Description: request.Description,
 		StartAt:     request.StartAt,
 		EndAt:       request.EndAt,
-	})
-	if err != nil {
-		logrus.Fatalln("Error when creating task", err)
+	}
+	//err := t.taskRepo.Create(task)
+	//if err != nil {
+	//	logrus.Fatalln("Error when creating task", err)
+	//	return nil, err
+	//}
+	if t.kafkaAdapt != nil {
+		err := t.kafkaAdapt.WriteByTopic(t.convertToKafkaMsg(task), t.config.Name)
+		if err != nil {
+			logrus.Error("Got error while push kafka msg: %v", err)
+		}
 	}
 	return &dtos.CreateTaskResponse{
 		Meta: dtos.NewMeta(http.StatusOK),
 	}, nil
 }
 
-func (t TaskService) GetAllTasks(request *dtos.CreateTaskRequest) (*dtos.CreateTaskResponse, error) {
-	logrus.Println("Creating Task")
-	err := t.taskRepo.Create(&models.Task{
-		Title:       request.Title,
-		Description: request.Description,
-		StartAt:     request.StartAt,
-		EndAt:       request.EndAt,
-	})
-	if err != nil {
-		logrus.Fatalln("Error when creating task", err)
+func (t *taskService) convertToKafkaMsg(task *models.Task) *dtos.TaskKafkaMsg {
+	return &dtos.TaskKafkaMsg{
+		ID:          "",
+		RequestID:   "",
+		RefEventID:  "",
+		Event:       "",
+		ServiceCode: "",
+		TimeStamp:   0,
+		UserID:      "",
+		PayloadID:   "",
+		Payload: dtos.TaskKafkaPayload{
+			ID:          task.ID,
+			Title:       task.Title,
+			Description: task.Description,
+			StartAt:     task.StartAt,
+			EndAt:       task.EndAt,
+		},
 	}
-	events.TaskCreated.Trigger(events.TaskCreatedPayload{
-		Email: "nguyenduyquang06@gmail.com",
-		Time:  time.Now(),
-	})
-	return &dtos.CreateTaskResponse{
-		Meta: dtos.NewMeta(http.StatusOK),
-	}, nil
 }

@@ -26,7 +26,7 @@ func (t *taskCreated) Register(handler TaskCreatedHandler) {
 }
 
 // Trigger sends out an event with the payload
-func (t taskCreated) Trigger(payload TaskCreatedPayload) {
+func (t *taskCreated) Trigger(payload TaskCreatedPayload) {
 	for _, handler := range t.handlers {
 		go handler.Handle(payload)
 	}

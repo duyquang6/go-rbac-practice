@@ -16,7 +16,7 @@ func autoMigration(db *gorm.DB) {
 	db.AutoMigrate(&models.Task{})
 }
 
-func NewResource(cfg *conf.AppConfig) (*Resource, error) {
+func NewResource(cfg conf.AppConfig) (Resource, error) {
 	log.Println("Initializing DB . . .")
 	db, err := gorm.Open("postgres", cfg.DB.GetConnectionString())
 	if err != nil {
@@ -25,5 +25,5 @@ func NewResource(cfg *conf.AppConfig) (*Resource, error) {
 
 	autoMigration(db)
 
-	return &Resource{DB: db}, err
+	return Resource{DB: db}, err
 }

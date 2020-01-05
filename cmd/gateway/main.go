@@ -6,17 +6,19 @@ import (
 	"github.com/sirupsen/logrus"
 	"todolist-facebook-chatbot/controllers"
 	"todolist-facebook-chatbot/middlewares"
+	"todolist-facebook-chatbot/services"
 	"todolist-facebook-chatbot/validator"
 )
 
 func main() {
-	gin := GetEngine()
+	gin := NewAppEngine()
 	logrus.Info("Starting server...")
 	logrus.Fatal(gin.Run(":8181"))
 }
 
 // Setup router
-func GetEngine() *gin.Engine {
+func NewAppEngine() *gin.Engine {
+	services.InitializeServices()
 	app := gin.Default()
 	binding.Validator = new(validator.DefaultValidator)
 

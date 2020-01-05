@@ -12,15 +12,15 @@ type TaskRepository interface {
 }
 
 type taskRepository struct {
-	resource  *Resource
-	appConfig *conf.AppConfig
+	resource  Resource
+	appConfig conf.AppConfig
 }
 
-func NewTaskRepository(config *conf.AppConfig, resource *Resource) (TaskRepository, error) {
+func NewTaskRepository(config conf.AppConfig, resource Resource) TaskRepository {
 	return &taskRepository{
 		resource:  resource,
 		appConfig: config,
-	}, nil
+	}
 }
 
 func (repo taskRepository) Create(task *models.Task) error {
