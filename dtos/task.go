@@ -5,8 +5,8 @@ import "time"
 type CreateTaskRequest struct {
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
-	StartAt     time.Time `json:"startAt"`
-	EndAt       time.Time `json:"endAt"`
+	StartAt     time.Time `json:"start_at"`
+	EndAt       time.Time `json:"end_at"`
 }
 
 type CreateTaskResponse struct {
@@ -42,7 +42,7 @@ type TaskKafkaMsg struct {
 
 // StaffProfileKafkaPayload present kafka msg payload format for Staff
 type TaskKafkaPayload struct {
-	ID          uint     `json:"id"`
+	ID          uint      `json:"id"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	StartAt     time.Time `json:"start_at"`

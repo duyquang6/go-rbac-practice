@@ -12,9 +12,9 @@ require (
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.16.0 // indirect
 	github.com/jinzhu/gorm v1.9.11
-	github.com/joho/godotenv v1.3.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/leodido/go-urn v1.2.0 // indirect
+	github.com/nlopes/slack v0.6.0
 	github.com/rs/cors v1.7.0
 	github.com/sirupsen/logrus v1.2.0
 	github.com/stretchr/testify v1.4.0

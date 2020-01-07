@@ -5,8 +5,9 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/sirupsen/logrus"
 	"todolist-facebook-chatbot/controllers"
+	_ "todolist-facebook-chatbot/handler"
 	"todolist-facebook-chatbot/middlewares"
-	"todolist-facebook-chatbot/services"
+	_ "todolist-facebook-chatbot/services"
 	"todolist-facebook-chatbot/validator"
 )
 
@@ -18,7 +19,6 @@ func main() {
 
 // Setup router
 func NewAppEngine() *gin.Engine {
-	services.InitializeServices()
 	app := gin.Default()
 	binding.Validator = new(validator.DefaultValidator)
 

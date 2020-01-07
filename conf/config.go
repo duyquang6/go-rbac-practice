@@ -12,6 +12,7 @@ type AppConfig struct {
 	Name    string   `default:"todolist" envconfig:"APP_NAME"`
 	DB      Postgres `envconfig:"DB"`
 	Kafka   Kafka    `envconfig:"KAFKA"`
+	Slack   Slack    `envconfig:"SLACK"`
 }
 
 // NewNtfServiceConfig create new notification service.

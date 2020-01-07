@@ -12,7 +12,7 @@ type taskDeletedHandler struct {
 }
 
 func init() {
-	log.Println("Init create notifier")
+	log.Println("Init delete notifier")
 	notifier := taskDeletedHandler{
 		adminEmail: "quangnguyen@blabla.com",
 		slackHook:  "https://webhook.slack.com",
