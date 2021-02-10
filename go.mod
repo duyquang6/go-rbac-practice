@@ -1,27 +1,11 @@
-module todolist-facebook-chatbot
+module github.com/duyquang6/go-todolist
 
-go 1.13
+go 1.15
 
 require (
-	github.com/Shopify/sarama v1.19.0
-	github.com/bsm/sarama-cluster v2.1.15+incompatible
-	github.com/ekyoung/gin-nice-recovery v0.0.0-20160510022553-1654dca486db
-	github.com/gin-contrib/gzip v0.0.1
-	github.com/gin-gonic/gin v1.4.0
-	github.com/go-errors/errors v1.0.1 // indirect
-	github.com/go-playground/locales v0.13.0 // indirect
-	github.com/go-playground/universal-translator v0.16.0 // indirect
-	github.com/jinzhu/gorm v1.9.11
-	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/leodido/go-urn v1.2.0 // indirect
-	github.com/nlopes/slack v0.6.0
-	github.com/rs/cors v1.7.0
-	github.com/sirupsen/logrus v1.2.0
-	github.com/stretchr/testify v1.4.0
-	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
-	github.com/swaggo/gin-swagger v1.2.0
-	go.uber.org/dig v1.8.0
-	gopkg.in/go-playground/validator.v9 v9.30.0
+	github.com/BurntSushi/toml v0.3.1 // indirect
+	github.com/client9/misspell v0.3.4
+	github.com/timakin/bodyclose v0.0.0-20200424151742-cb6215831a94
+	golang.org/x/tools v0.0.0-20191030062658-86caa796c7ab
+	honnef.co/go/tools v0.0.0-20190106161140-3f1c8253044a
 )
-
-replace github.com/ugorji/go v1.1.4 => github.com/ugorji/go/codec v0.0.0-20190204201341-e444a5086c43
