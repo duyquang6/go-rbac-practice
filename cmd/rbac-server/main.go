@@ -1,23 +1,15 @@
-// This package serve for db migration
 package main
 
 import (
 	"context"
-	"flag"
-	"log"
 
 	"github.com/duyquang6/go-rbac-practice/internal/buildinfo"
 	"github.com/duyquang6/go-rbac-practice/pkg/logging"
-
 	"github.com/sethvargo/go-signalcontext"
 )
 
-var (
-	migrationDir = flag.String("path", "migrations/", "path to migrations folder")
-)
-
+// main wrap realMain around a graceful shutdown scheme
 func main() {
-	flag.Parse()
 	ctx, done := signalcontext.OnInterrupt()
 
 	logger := logging.NewLoggerFromEnv().
@@ -36,13 +28,13 @@ func main() {
 	done()
 
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 	logger.Info("successful shutdown")
 }
 
 func realMain(ctx context.Context) error {
 	logger := logging.FromContext(ctx)
-	logger.Info(migrationDir)
+	logger.Error("hihi")
 	return nil
 }

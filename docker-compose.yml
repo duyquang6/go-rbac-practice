@@ -1,5 +1,59 @@
-version: '3'
+version: '3.1'
 
-fluentd
-graylog
-opentelemetry
+services:
+  postgres:
+    image: postgres:12
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: dev
+      POSTGRES_USER: dev
+      POSTGRES_DB: rbac-db
+    ports: 
+    - "5432:5432"
+
+  fluentd:
+    image: docker.io/bitnami/fluentd:1-debian-10
+    ports:
+      - "24224:24224"
+      - "5140:5140"
+    volumes:
+      - fluentd_data:/bitnami/fluentd
+
+  redis:
+    image: redis:latest
+    ports: 
+    - "6379:6379"
+
+  # TODO: Add opentelemetry
+  # opentelemetry
+  #   image: graylog/graylog:4.0
+  #   environment:
+  #     # CHANGE ME (must be at least 16 characters)!
+  #     - GRAYLOG_PASSWORD_SECRET=somepasswordpepper
+  #     # Password: admin
+  #     - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+  #     - GRAYLOG_HTTP_EXTERNAL_URI=http://127.0.0.1:9000/
+  #   entrypoint: /usr/bin/tini -- wait-for-it elasticsearch:9200 --  /docker-entrypoint.sh
+  #   links:
+  #     - mongodb:mongo
+  #     - elasticsearch
+  #   restart: always
+  #   depends_on:
+  #     - mongodb
+  #     - elasticsearch
+  #   ports:
+  #     # Graylog web interface and REST API
+  #     - 9000:9000
+  #     # Syslog TCP
+  #     - 1514:1514
+  #     # Syslog UDP
+  #     - 1514:1514/udp
+  #     # GELF TCP
+  #     - 12201:12201
+  #     # GELF UDP
+  #     - 12201:12201/udp
+
+volumes:
+  fluentd_data:
+    driver: local
+  
