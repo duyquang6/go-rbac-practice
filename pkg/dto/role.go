@@ -4,14 +4,6 @@ package dto
 type CreateRoleRequest struct {
 }
 
-// CreateRoleRequest
-type CreateRoleResponse struct {
-}
-
-// CreateRoleRequest
-type CreateRoleResponse struct {
-}
-
-// CreateRoleRequest
+// CreateRoleResponse
 type CreateRoleResponse struct {
 }

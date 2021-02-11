@@ -24,8 +24,20 @@ services:
     ports: 
     - "6379:6379"
 
-  # TODO: Add opentelemetry
-  # opentelemetry
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    environment: 
+      COLLECTOR_ZIPKIN_HTTP_PORT: 9411
+    ports:
+      - "6831:6831/udp"
+      - "16686:16686"
+      - "5775:5775/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "14268:14268"
+      - "14250:14250"
+      - "9411:9411"
+      
   #   image: graylog/graylog:4.0
   #   environment:
   #     # CHANGE ME (must be at least 16 characters)!
@@ -34,9 +46,6 @@ services:
   #     - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
   #     - GRAYLOG_HTTP_EXTERNAL_URI=http://127.0.0.1:9000/
   #   entrypoint: /usr/bin/tini -- wait-for-it elasticsearch:9200 --  /docker-entrypoint.sh
-  #   links:
-  #     - mongodb:mongo
-  #     - elasticsearch
   #   restart: always
   #   depends_on:
   #     - mongodb

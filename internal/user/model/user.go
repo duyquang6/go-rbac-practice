@@ -13,8 +13,9 @@ import (
 type User struct {
 	gorm.Model
 	dberror.Errorable
-	Name  string `validate:"required,max=255"`
-	Email string `validate:"required,email"`
+	Username string `validate:"required,max=255"`
+	Pasword  string `validate:"required,max=255"`
+	Email    string `validate:"required,email"`
 }
 
 // BeforeSave is used by callbacks.

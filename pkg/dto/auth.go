@@ -1,7 +1,10 @@
 package dto
 
 type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
-type Response struct {
+type LoginResponse struct {
+	Meta Meta `json:"meta"`
 }
