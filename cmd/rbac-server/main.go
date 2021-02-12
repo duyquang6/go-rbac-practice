@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 
+	"github.com/duyquang6/go-rbac-practice/internal/api"
 	"github.com/duyquang6/go-rbac-practice/internal/buildinfo"
 	"github.com/duyquang6/go-rbac-practice/pkg/logging"
 	"github.com/sethvargo/go-signalcontext"
@@ -35,6 +36,6 @@ func main() {
 
 func realMain(ctx context.Context) error {
 	logger := logging.FromContext(ctx)
-	logger.Error("hihi")
-	return nil
+	httpapp := api.NewHTTPServer(logger)
+	return httpapp.Run(ctx)
 }
