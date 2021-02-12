@@ -3,21 +3,17 @@ package main
 
 import (
 	"context"
-	"flag"
 	"log"
 
 	"github.com/duyquang6/go-rbac-practice/internal/buildinfo"
+	"github.com/duyquang6/go-rbac-practice/internal/database"
+	"github.com/duyquang6/go-rbac-practice/internal/setup"
 	"github.com/duyquang6/go-rbac-practice/pkg/logging"
 
 	"github.com/sethvargo/go-signalcontext"
 )
 
-var (
-	migrationDir = flag.String("path", "migrations/", "path to migrations folder")
-)
-
 func main() {
-	flag.Parse()
 	ctx, done := signalcontext.OnInterrupt()
 
 	logger := logging.NewLoggerFromEnv().
@@ -43,6 +39,14 @@ func main() {
 
 func realMain(ctx context.Context) error {
 	logger := logging.FromContext(ctx)
-	logger.Info(migrationDir)
+
+	var config database.Config
+	env, err := setup.Setup(ctx, &config)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	if err := env.Database().Migrate(ctx); err != nil {
+		logger.Fatal("cannot migrate: %v", err.Error())
+	}
 	return nil
 }

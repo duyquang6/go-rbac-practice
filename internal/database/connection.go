@@ -78,8 +78,8 @@ func dbValues(cfg *Config) map[string]string {
 	setIfNotEmpty(p, "sslrootcert", cfg.SSLRootCertPath)
 	setIfNotEmpty(p, "pool_min_conns", cfg.PoolMinConnections)
 	setIfNotEmpty(p, "pool_max_conns", cfg.PoolMaxConnections)
-	setIfPositiveDuration(p, "pool_max_conn_lifetime", cfg.PoolMaxConnLife)
-	setIfPositiveDuration(p, "pool_max_conn_idle_time", cfg.PoolMaxConnIdle)
-	setIfPositiveDuration(p, "pool_health_check_period", cfg.PoolHealthCheck)
+	// setIfPositiveDuration(p, "pool_max_conn_lifetime", cfg.PoolMaxConnLife)
+	// setIfPositiveDuration(p, "pool_max_conn_idle_time", cfg.PoolMaxConnIdle)
+	// setIfPositiveDuration(p, "pool_health_check_period", cfg.PoolHealthCheck)
 	return p
 }

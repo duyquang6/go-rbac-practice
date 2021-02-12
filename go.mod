@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/client9/misspell v0.3.4
+	github.com/go-gormigrate/gormigrate/v2 v2.0.0
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/google/go-cmp v0.5.4
 	github.com/gostaticanalysis/analysisutil v0.6.1 // indirect

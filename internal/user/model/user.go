@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	authorizedModel "github.com/duyquang6/go-rbac-practice/internal/authorization/model"
 	"github.com/duyquang6/go-rbac-practice/internal/dberror"
 	_validator "github.com/duyquang6/go-rbac-practice/pkg/validator"
 	"github.com/go-playground/validator/v10"
@@ -13,9 +14,10 @@ import (
 type User struct {
 	gorm.Model
 	dberror.Errorable
-	Username string `validate:"required,max=255"`
-	Pasword  string `validate:"required,max=255"`
-	Email    string `validate:"required,email"`
+	Username string                  `validate:"required,max=255"`
+	Pasword  string                  `validate:"required,max=255"`
+	Email    string                  `validate:"required,email"`
+	Roles    []*authorizedModel.Role `gorm:"many2many:user_roles;"`
 }
 
 // BeforeSave is used by callbacks.

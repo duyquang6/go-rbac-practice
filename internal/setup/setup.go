@@ -30,15 +30,16 @@ func SetupWith(ctx context.Context, config interface{}, l envconfig.Lookuper) (*
 
 	// Build a list of mutators. This list will grow as we initialize more of the
 	// configuration, such as the secret manager.
-	var mutatorFuncs []envconfig.MutatorFunc
+	// var mutatorFuncs []envconfig.MutatorFunc
 
 	// Build a list of options to pass to the server env.
 	var serverEnvOpts []serverenv.Option
 
 	// Process first round of environment variables.
-	if err := envconfig.ProcessWith(ctx, config, l, mutatorFuncs...); err != nil {
+	if err := envconfig.ProcessWith(ctx, config, l); err != nil {
 		return nil, fmt.Errorf("error loading environment variables: %w", err)
 	}
+
 	logger.Infow("provided", "config", config)
 
 	// Setup the database connection.
