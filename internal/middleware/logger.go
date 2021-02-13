@@ -20,7 +20,6 @@ func PopulateLogger(originalLogger *zap.SugaredLogger) gin.HandlerFunc {
 			logger = existing
 		}
 
-		// fmt.Println(controller.RequestIDFromContext(ctx))
 		// If there's a request ID, set that on the logger.
 		if id := controller.RequestIDFromContext(ctx); id != "" {
 			logger = logger.With("request_id", id)

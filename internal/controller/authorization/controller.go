@@ -5,12 +5,12 @@ import (
 )
 
 type Controller struct {
-	authService authorization.AuthorizationService
+	authorizationService authorization.AuthorizationService
 }
 
 // New creates a new authorization controller.
 func New(authService authorization.AuthorizationService) *Controller {
 	return &Controller{
-		authService: authService,
+		authorizationService: authService,
 	}
 }

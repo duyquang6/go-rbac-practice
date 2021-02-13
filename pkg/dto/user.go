@@ -3,8 +3,14 @@ package dto
 // CreateUserRequest
 type CreateUserRequest struct {
 	Username string `json:"username"`
-	Pasword  string `json:"password"`
+	Password string `json:"password"`
 	Email    string `json:"email"`
+}
+
+// CreateUserRequest
+type BindingRoleUserRequest struct {
+	UserID  int64   `json:"user_id"`
+	RoleIDs []int64 `json:"role_ids"`
 }
 
 // CreateUserResponse

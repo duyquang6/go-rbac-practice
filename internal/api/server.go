@@ -8,7 +8,13 @@ import (
 	"time"
 
 	authorizationSvc "github.com/duyquang6/go-rbac-practice/internal/authorization"
+	authorizedDatabase "github.com/duyquang6/go-rbac-practice/internal/authorization/database"
 	authorizationCon "github.com/duyquang6/go-rbac-practice/internal/controller/authorization"
+	userCon "github.com/duyquang6/go-rbac-practice/internal/controller/user"
+	userSvc "github.com/duyquang6/go-rbac-practice/internal/user"
+	userDatabase "github.com/duyquang6/go-rbac-practice/internal/user/database"
+
+	"github.com/duyquang6/go-rbac-practice/internal/database"
 	"github.com/duyquang6/go-rbac-practice/internal/middleware"
 	"github.com/duyquang6/go-rbac-practice/pkg/logging"
 	"github.com/gin-gonic/gin"
@@ -17,11 +23,13 @@ import (
 
 type httpServer struct {
 	logger *zap.SugaredLogger
+	db     *database.DB
 }
 
-func NewHTTPServer(logger *zap.SugaredLogger) *httpServer {
+func NewHTTPServer(logger *zap.SugaredLogger, db *database.DB) *httpServer {
 	return &httpServer{
 		logger: logger,
+		db:     db,
 	}
 }
 
@@ -39,9 +47,27 @@ func (s *httpServer) Run(ctx context.Context) error {
 	v1.Use(middleware.PopulateRequestID())
 	v1.Use(middleware.PopulateLogger(logging.FromContext(ctx)))
 	{
-		authorService := authorizationSvc.NewAuthorizationService()
+		authorRepo := authorizedDatabase.New(s.db)
+		authorService := authorizationSvc.NewAuthorizationService(authorRepo)
 		authorController := authorizationCon.New(authorService)
-		v1.POST("/role", authorController.HandleCreateRole())
+		{
+			// role
+			v1.POST("/role", authorController.HandleCreateRole())
+			v1.POST("/role/:id/binding", authorController.HandleBindingPolicyRole())
+
+			// policy
+			v1.POST("/policy", authorController.HandleCreatePolicy())
+			v1.POST("/policy/:id/append", authorController.HandleAppendPermissionPolicy())
+		}
+
+		userRepo := userDatabase.New(s.db)
+		userService := userSvc.New(userRepo)
+		userController := userCon.New(userService)
+		{
+			// role
+			v1.POST("/user", userController.HandleCreateUser())
+			v1.POST("/user/:id/binding", userController.HandleBindingRoleUser())
+		}
 	}
 	srv := &http.Server{
 		Addr:    ":8080",

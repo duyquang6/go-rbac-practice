@@ -3,3 +3,5 @@ main
 /full-stack/
 rbac
 bin/*
+.vscode
+.idea

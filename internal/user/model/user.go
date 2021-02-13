@@ -14,9 +14,9 @@ import (
 type User struct {
 	gorm.Model
 	dberror.Errorable
-	Username string                  `validate:"required,max=255"`
-	Pasword  string                  `validate:"required,max=255"`
-	Email    string                  `validate:"required,email"`
+	Username string
+	Password string
+	Email    string
 	Roles    []*authorizedModel.Role `gorm:"many2many:user_roles;"`
 }
 

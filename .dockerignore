@@ -2,3 +2,5 @@
 scripts
 tools
 terraform
+.vscode
+.idea

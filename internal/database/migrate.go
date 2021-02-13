@@ -72,6 +72,23 @@ func (_db *DB) Migrate(ctx context.Context) error {
 				return tx.Migrator().DropTable("users")
 			},
 		},
+		{
+			ID: "00005-AddUserPermission",
+			Migrate: func(tx *gorm.DB) error {
+				statements := []string{
+					`INSERT INTO permissions(object,code,action) VALUES ('user', 1, 'read'),
+																	('user', 2, 'create'),
+																	('user', 4, 'update'),
+																	('user', 8, 'delete');`,
+				}
+				for _, sql := range statements {
+					if err := tx.Exec(sql).Error; err != nil {
+						return err
+					}
+				}
+				return nil
+			},
+		},
 	})
 	return m.Migrate()
 }

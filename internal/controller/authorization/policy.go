@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (s *Controller) HandleCreateRole() func(*gin.Context) {
+func (s *Controller) HandleCreatePolicy() func(*gin.Context) {
 	return func(c *gin.Context) {
 		ctx := c.Request.Context()
 		data, err := ioutil.ReadAll(c.Request.Body)
@@ -19,20 +19,20 @@ func (s *Controller) HandleCreateRole() func(*gin.Context) {
 			return
 		}
 
-		req := dto.CreateRoleRequest{}
+		req := dto.CreatePolicyRequest{}
 		err = json.Unmarshal(data, &req)
 		if err != nil {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
-		if err = s.authorizationService.CreateRole(ctx, req); err != nil {
+		if err = s.authorizationService.CreatePolicy(ctx, req); err != nil {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
 	}
 }
 
-func (s *Controller) HandleBindingPolicyRole() gin.HandlerFunc {
+func (s *Controller) HandleAppendPermissionPolicy() func(*gin.Context) {
 	return func(c *gin.Context) {
 		ctx := c.Request.Context()
 		data, err := ioutil.ReadAll(c.Request.Body)
@@ -41,19 +41,19 @@ func (s *Controller) HandleBindingPolicyRole() gin.HandlerFunc {
 			return
 		}
 
-		req := dto.BindingPolicyRoleRequest{}
+		req := dto.AppendPermissionPolicyRequest{}
 		err = json.Unmarshal(data, &req)
 		if err != nil {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
-		req.RoleID, err = strconv.ParseInt((c.Param("id")), 10, 64)
+		req.PolicyID, err = strconv.ParseInt((c.Param("id")), 10, 64)
 		if err != nil {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
 
-		if err = s.authorizationService.BindingPolicyRole(ctx, req); err != nil {
+		if err = s.authorizationService.AppendPermissionPolicy(ctx, req); err != nil {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}

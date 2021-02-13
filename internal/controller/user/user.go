@@ -1,4 +1,4 @@
-package authorization
+package user
 
 import (
 	"encoding/json"
@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (s *Controller) HandleCreateRole() func(*gin.Context) {
+func (s *Controller) HandleCreateUser() func(*gin.Context) {
 	return func(c *gin.Context) {
 		ctx := c.Request.Context()
 		data, err := ioutil.ReadAll(c.Request.Body)
@@ -19,20 +19,20 @@ func (s *Controller) HandleCreateRole() func(*gin.Context) {
 			return
 		}
 
-		req := dto.CreateRoleRequest{}
+		req := dto.CreateUserRequest{}
 		err = json.Unmarshal(data, &req)
 		if err != nil {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
-		if err = s.authorizationService.CreateRole(ctx, req); err != nil {
+		if err = s.userService.CreateUser(ctx, req); err != nil {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
 	}
 }
 
-func (s *Controller) HandleBindingPolicyRole() gin.HandlerFunc {
+func (s *Controller) HandleBindingRoleUser() func(*gin.Context) {
 	return func(c *gin.Context) {
 		ctx := c.Request.Context()
 		data, err := ioutil.ReadAll(c.Request.Body)
@@ -41,19 +41,19 @@ func (s *Controller) HandleBindingPolicyRole() gin.HandlerFunc {
 			return
 		}
 
-		req := dto.BindingPolicyRoleRequest{}
+		req := dto.BindingRoleUserRequest{}
 		err = json.Unmarshal(data, &req)
 		if err != nil {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
-		req.RoleID, err = strconv.ParseInt((c.Param("id")), 10, 64)
+		req.UserID, err = strconv.ParseInt((c.Param("id")), 10, 64)
 		if err != nil {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
 
-		if err = s.authorizationService.BindingPolicyRole(ctx, req); err != nil {
+		if err = s.userService.BindingRoleUser(ctx, req); err != nil {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}

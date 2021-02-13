@@ -3,7 +3,6 @@ module github.com/duyquang6/go-rbac-practice
 go 1.15
 
 require (
-	github.com/chromedp/cdproto v0.0.0-20210211211551-bf465a41a1f9
 	github.com/client9/misspell v0.3.4
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-gormigrate/gormigrate/v2 v2.0.0
@@ -25,7 +24,7 @@ require (
 	go.opentelemetry.io/otel/sdk v0.16.0
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.16.0
-	golang.org/x/crypto v0.0.0-20201217014255-9d1352758620 // indirect
+	golang.org/x/crypto v0.0.0-20201217014255-9d1352758620
 	golang.org/x/lint v0.0.0-20201208152925-83fdc39ff7b5 // indirect
 	golang.org/x/mod v0.4.1 // indirect
 	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a // indirect

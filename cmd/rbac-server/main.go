@@ -5,6 +5,8 @@ import (
 
 	"github.com/duyquang6/go-rbac-practice/internal/api"
 	"github.com/duyquang6/go-rbac-practice/internal/buildinfo"
+	"github.com/duyquang6/go-rbac-practice/internal/database"
+	"github.com/duyquang6/go-rbac-practice/internal/setup"
 	"github.com/duyquang6/go-rbac-practice/pkg/logging"
 	"github.com/sethvargo/go-signalcontext"
 )
@@ -36,6 +38,13 @@ func main() {
 
 func realMain(ctx context.Context) error {
 	logger := logging.FromContext(ctx)
-	httpapp := api.NewHTTPServer(logger)
+
+	var config database.Config
+	env, err := setup.Setup(ctx, &config)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	httpapp := api.NewHTTPServer(logger, env.Database())
 	return httpapp.Run(ctx)
 }
