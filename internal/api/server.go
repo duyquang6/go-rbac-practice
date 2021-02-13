@@ -7,18 +7,11 @@ import (
 	"net/http"
 	"time"
 
-	authorizationSvc "github.com/duyquang6/go-rbac-practice/internal/authorization"
-	authorizedDatabase "github.com/duyquang6/go-rbac-practice/internal/authorization/database"
-	authorizationCon "github.com/duyquang6/go-rbac-practice/internal/controller/authorization"
-	userCon "github.com/duyquang6/go-rbac-practice/internal/controller/user"
-	userSvc "github.com/duyquang6/go-rbac-practice/internal/user"
-	userDatabase "github.com/duyquang6/go-rbac-practice/internal/user/database"
-
 	"github.com/duyquang6/go-rbac-practice/internal/database"
-	"github.com/duyquang6/go-rbac-practice/internal/middleware"
 	"github.com/duyquang6/go-rbac-practice/pkg/logging"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"gopkg.in/boj/redistore.v1"
 )
 
 type httpServer struct {
@@ -35,40 +28,12 @@ func NewHTTPServer(logger *zap.SugaredLogger, db *database.DB) *httpServer {
 
 func (s *httpServer) Run(ctx context.Context) error {
 	r := gin.Default()
-
-	// Ping handler
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-
-	v1 := r.Group("/v1")
-	v1.Use(middleware.PopulateRequestID())
-	v1.Use(middleware.PopulateLogger(logging.FromContext(ctx)))
-	{
-		authorRepo := authorizedDatabase.New(s.db)
-		authorService := authorizationSvc.NewAuthorizationService(authorRepo)
-		authorController := authorizationCon.New(authorService)
-		{
-			// role
-			v1.POST("/role", authorController.HandleCreateRole())
-			v1.POST("/role/:id/binding", authorController.HandleBindingPolicyRole())
-
-			// policy
-			v1.POST("/policy", authorController.HandleCreatePolicy())
-			v1.POST("/policy/:id/append", authorController.HandleAppendPermissionPolicy())
-		}
-
-		userRepo := userDatabase.New(s.db)
-		userService := userSvc.New(userRepo)
-		userController := userCon.New(userService)
-		{
-			// role
-			v1.POST("/user", userController.HandleCreateUser())
-			v1.POST("/user/:id/binding", userController.HandleBindingRoleUser())
-		}
+	// Setup sessions
+	sessionStore, err := redistore.NewRediStore(10, "tcp", ":6379", "", []byte(""))
+	if err != nil {
+		s.logger.Fatal("cannot init redis session: %v", err)
 	}
+	s.initRoute(ctx, r, sessionStore)
 	srv := &http.Server{
 		Addr:    ":8080",
 		Handler: r,
