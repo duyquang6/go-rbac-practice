@@ -17,7 +17,6 @@ import (
 
 type AuthService interface {
 	Login(ctx context.Context, session *sessions.Session, req dto.LoginRequest) error
-	// StoreSession(ctx context.Context) error
 	ClearSession(ctx context.Context, session *sessions.Session)
 	GetSessionData(ctx context.Context, session *sessions.Session) (SessionData, error)
 }
