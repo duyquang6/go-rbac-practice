@@ -12,6 +12,7 @@ import (
 type UserRepository interface {
 	Create(ctx context.Context, user userModel.User) error
 	BindingRoleUser(ctx context.Context, userID int64, role []authorizationModel.Role) error
+	GetByUsername(ctx context.Context, username string) (userModel.User, error)
 }
 
 type authorizationDB struct {
@@ -33,4 +34,12 @@ func (s *authorizationDB) BindingRoleUser(ctx context.Context, userID int64, rol
 	return s.db.Pool.Model(&userModel.User{
 		Model: gorm.Model{ID: uint(userID)},
 	}).Association("Roles").Append(role)
+}
+
+func (s *authorizationDB) GetByUsername(ctx context.Context, username string) (userModel.User, error) {
+	user := userModel.User{
+		Username: username,
+	}
+	res := s.db.Pool.First(&user)
+	return user, res.Error
 }

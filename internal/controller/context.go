@@ -2,23 +2,20 @@ package controller
 
 import (
 	"context"
-	"encoding/gob"
-	"time"
 
+	"github.com/duyquang6/go-rbac-practice/internal/user/model"
+	"github.com/duyquang6/go-rbac-practice/pkg/rbac"
 	"github.com/gorilla/sessions"
 )
 
 type contextKey string
 
 const (
-	contextRequestIDKey    contextKey = "requestID"
-	contextKeySession      contextKey = "session"
-	sessionKeyLastActivity contextKey = "lastActivity"
+	contextRequestIDKey         contextKey = "requestID"
+	contextKeySession           contextKey = "session"
+	contextKeyUser              contextKey = "user"
+	contextKeyPermissionMapping contextKey = "permissionMapping"
 )
-
-func init() {
-	gob.Register(*new(contextKey))
-}
 
 func WithRequestID(ctx context.Context, id string) context.Context {
 	return context.WithValue(ctx, contextRequestIDKey, id)
@@ -54,11 +51,40 @@ func SessionFromContext(ctx context.Context) *sessions.Session {
 	return t
 }
 
-// StoreSessionLastActivity stores the last time the user did something. This is
-// used to track idle session timeouts.
-func StoreSessionLastActivity(session *sessions.Session, t time.Time) {
-	if session == nil {
-		return
+// WithUser stores the current user on the context.
+func WithUser(ctx context.Context, u model.User) context.Context {
+	return context.WithValue(ctx, contextKeyUser, u)
+}
+
+// UserFromContext retrieves the user from the context. If no value exists, it
+// returns nil.
+func UserFromContext(ctx context.Context) *model.User {
+	v := ctx.Value(contextKeyUser)
+	if v == nil {
+		return nil
 	}
-	session.Values[sessionKeyLastActivity] = t.Unix()
+
+	t, ok := v.(*model.User)
+	if !ok {
+		return nil
+	}
+	return t
+}
+
+// WithPermissionMapping stores the user's available memberships on the context.
+func WithPermissionMapping(ctx context.Context, p rbac.PermissionMapping) context.Context {
+	return context.WithValue(ctx, contextKeyPermissionMapping, p)
+}
+
+func PermissionMappingFromContext(ctx context.Context) rbac.PermissionMapping {
+	v := ctx.Value(contextKeyPermissionMapping)
+	if v == nil {
+		return nil
+	}
+
+	t, ok := v.(rbac.PermissionMapping)
+	if !ok {
+		return nil
+	}
+	return t
 }

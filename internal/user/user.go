@@ -15,6 +15,7 @@ import (
 type UserService interface {
 	CreateUser(ctx context.Context, req dto.CreateUserRequest) error
 	BindingRoleUser(ctx context.Context, req dto.BindingRoleUserRequest) error
+	GetByUsername(ctx context.Context, username string) (model.User, error)
 }
 
 type userSvc struct {
@@ -42,7 +43,7 @@ func (u *userSvc) CreateUser(ctx context.Context, req dto.CreateUserRequest) err
 	}
 
 	if err := u.userRepo.Create(ctx, user); err != nil {
-		logger.Error("create user failed: %v", err)
+		logger.Errorf("create user failed: %v", err)
 		return err
 	}
 
@@ -58,8 +59,18 @@ func (u *userSvc) BindingRoleUser(ctx context.Context, req dto.BindingRoleUserRe
 	}
 
 	if err := u.userRepo.BindingRoleUser(ctx, req.UserID, policies); err != nil {
-		logger.Error("binding role user failed: %v", err)
+		logger.Errorf("binding role user failed: %v", err)
 		return err
 	}
 	return nil
+}
+
+func (u *userSvc) GetByUsername(ctx context.Context, username string) (model.User, error) {
+	logger := logging.FromContext(ctx).Named("BindingRoleUser")
+	user, err := u.userRepo.GetByUsername(ctx, username)
+	if err != nil {
+		logger.Errorf("get user failed: %v", err)
+		return user, err
+	}
+	return user, err
 }

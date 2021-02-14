@@ -3,13 +3,16 @@ package api
 import (
 	"context"
 
+	authSvc "github.com/duyquang6/go-rbac-practice/internal/auth"
 	authorizationSvc "github.com/duyquang6/go-rbac-practice/internal/authorization"
 	authorizedDatabase "github.com/duyquang6/go-rbac-practice/internal/authorization/database"
+	authCon "github.com/duyquang6/go-rbac-practice/internal/controller/auth"
 	authorizationCon "github.com/duyquang6/go-rbac-practice/internal/controller/authorization"
 	userCon "github.com/duyquang6/go-rbac-practice/internal/controller/user"
 	"github.com/duyquang6/go-rbac-practice/internal/middleware"
 	userSvc "github.com/duyquang6/go-rbac-practice/internal/user"
 	userDatabase "github.com/duyquang6/go-rbac-practice/internal/user/database"
+
 	"github.com/duyquang6/go-rbac-practice/pkg/logging"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
@@ -22,32 +25,45 @@ func (s *httpServer) initRoute(ctx context.Context, r *gin.Engine, sessionStore 
 			"message": "pong",
 		})
 	})
-	populateSession := middleware.PopulateSessionIfNotExist(sessionStore)
 	v1 := r.Group("/v1")
+	authorRepo := authorizedDatabase.New(s.db)
+	authorService := authorizationSvc.NewAuthorizationService(authorRepo)
+	authorController := authorizationCon.New(authorService)
+
+	userRepo := userDatabase.New(s.db)
+	userService := userSvc.New(userRepo)
+	userController := userCon.New(userService)
+
+	authService := authSvc.New(userRepo, authorRepo)
+	authController := authCon.New(authService)
+
+	populateSession := middleware.PopulateSessionIfNotExist(sessionStore)
+
 	v1.Use(middleware.PopulateRequestID())
 	v1.Use(middleware.PopulateLogger(logging.FromContext(ctx)))
 	v1.Use(populateSession)
 	{
-		authorRepo := authorizedDatabase.New(s.db)
-		authorService := authorizationSvc.NewAuthorizationService(authorRepo)
-		authorController := authorizationCon.New(authorService)
+		{
+			v1.POST("/login", authController.HandleLogin())
+		}
+
+		sub := v1.Group("/")
+		sub.Use(middleware.AuthSession(authService, userService))
 		{
 			// role
-			v1.POST("/role", authorController.HandleCreateRole())
-			v1.POST("/role/:id/binding", authorController.HandleBindingPolicyRole())
+			sub.POST("/role", authorController.HandleCreateRole())
+			sub.POST("/role/:id/binding", authorController.HandleBindingPolicyRole())
 
 			// policy
-			v1.POST("/policy", authorController.HandleCreatePolicy())
-			v1.POST("/policy/:id/append", authorController.HandleAppendPermissionPolicy())
+			sub.POST("/policy", authorController.HandleCreatePolicy())
+			sub.POST("/policy/:id/append", authorController.HandleAppendPermissionPolicy())
 		}
 
-		userRepo := userDatabase.New(s.db)
-		userService := userSvc.New(userRepo)
-		userController := userCon.New(userService)
 		{
 			// role
-			v1.POST("/user", userController.HandleCreateUser())
-			v1.POST("/user/:id/binding", userController.HandleBindingRoleUser())
+			sub.POST("/user", userController.HandleCreateUser())
+			sub.POST("/user/:id/binding", userController.HandleBindingRoleUser())
 		}
+
 	}
 }

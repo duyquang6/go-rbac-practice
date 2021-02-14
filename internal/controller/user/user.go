@@ -6,13 +6,22 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/duyquang6/go-rbac-practice/internal/controller"
 	"github.com/duyquang6/go-rbac-practice/pkg/dto"
+	"github.com/duyquang6/go-rbac-practice/pkg/rbac"
 	"github.com/gin-gonic/gin"
 )
 
 func (s *Controller) HandleCreateUser() func(*gin.Context) {
 	return func(c *gin.Context) {
 		ctx := c.Request.Context()
+
+		permissionMapping := controller.PermissionMappingFromContext(ctx)
+		if !rbac.IsPermit(permissionMapping, rbac.User, rbac.Create) {
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
+
 		data, err := ioutil.ReadAll(c.Request.Body)
 		if err != nil {
 			c.AbortWithStatus(http.StatusBadRequest)

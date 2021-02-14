@@ -32,7 +32,7 @@ func (s *authorizationService) CreateRole(ctx context.Context, role dto.CreateRo
 		Description: role.Description,
 	}
 	if err := s.authorizationRepo.CreateRole(ctx, roleModel); err != nil {
-		logger.Error("create role failed: %v", err)
+		logger.Errorf("create role failed: %v", err)
 		return err
 	}
 	return nil
@@ -50,7 +50,7 @@ func (s *authorizationService) CreatePolicy(ctx context.Context, policy dto.Crea
 		Description: policy.Description,
 	}
 	if err := s.authorizationRepo.CreatePolicy(ctx, policyModel); err != nil {
-		logger.Error("create policy failed: %v", err)
+		logger.Errorf("create policy failed: %v", err)
 		return err
 	}
 	return nil
@@ -65,7 +65,7 @@ func (s *authorizationService) AppendPermissionPolicy(ctx context.Context, req d
 	}
 
 	if err := s.authorizationRepo.AppendPermissionPolicy(ctx, req.PolicyID, permissions); err != nil {
-		logger.Error("append permission policy failed: %v", err)
+		logger.Errorf("append permission policy failed: %v", err)
 		return err
 	}
 	return nil
@@ -80,7 +80,7 @@ func (s *authorizationService) BindingPolicyRole(ctx context.Context, req dto.Bi
 	}
 
 	if err := s.authorizationRepo.BindingPolicyRole(ctx, req.RoleID, policies); err != nil {
-		logger.Error("binding policy role failed: %v", err)
+		logger.Errorf("binding policy role failed: %v", err)
 		return err
 	}
 	return nil
