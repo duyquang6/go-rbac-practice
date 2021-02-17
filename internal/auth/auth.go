@@ -48,7 +48,7 @@ func (s *authService) Login(ctx context.Context, session *sessions.Session, req 
 
 	// Get permission
 	permissionData := make(rbac.PermissionMapping)
-	permissions, err := s.authorizationRepo.GetPermissionByUser(ctx, int64(user.ID))
+	permissions, err := s.authorizationRepo.GetPermissionByUserID(ctx, int64(user.ID))
 	if err != nil {
 		s.ClearSession(ctx, session)
 		logger.Error("get permission failed: ", err)

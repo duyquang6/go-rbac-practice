@@ -1,6 +1,6 @@
 module github.com/duyquang6/go-rbac-practice
 
-go 1.15
+go 1.16
 
 require (
 	github.com/client9/misspell v0.3.4

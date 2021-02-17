@@ -14,7 +14,7 @@ type AuthorizationRepository interface {
 	CreatePolicy(ctx context.Context, policy authorizedModel.Policy) error
 	AppendPermissionPolicy(ctx context.Context, policyID int64, permissions []authorizedModel.Permission) error
 	BindingPolicyRole(ctx context.Context, roleID int64, policies []authorizedModel.Policy) error
-	GetPermissionByUser(ctx context.Context, userID int64) ([]authorizedModel.Permission, error)
+	GetPermissionByUserID(ctx context.Context, userID int64) ([]authorizedModel.Permission, error)
 }
 
 type authorizationDB struct {
@@ -49,7 +49,7 @@ func (s *authorizationDB) BindingPolicyRole(ctx context.Context, roleID int64, p
 	return s.db.Pool.Model(&authorizedModel.Role{ID: roleID}).Association("Policies").Append(policies)
 }
 
-func (s *authorizationDB) GetPermissionByUser(ctx context.Context, userID int64) ([]authorizedModel.Permission, error) {
+func (s *authorizationDB) GetPermissionByUserID(ctx context.Context, userID int64) ([]authorizedModel.Permission, error) {
 	var (
 		permissions []authorizedModel.Permission
 	)
@@ -57,7 +57,6 @@ func (s *authorizationDB) GetPermissionByUser(ctx context.Context, userID int64)
 							INNER JOIN permission_policies pp ON p.id = pp.permission_id
 							INNER JOIN policy_roles pr on pp.policy_id = pr.policy_id
 							INNER JOIN user_roles ur on ur.role_id = pr.role_id
-							WHERE user_id=?
-	`, userID).Scan(&permissions).Error
+							WHERE user_id=?`, userID).Scan(&permissions).Error
 	return permissions, err
 }
