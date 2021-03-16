@@ -98,5 +98,5 @@ func (w *beforeFirstByteWriter) Write(b []byte) (int, error) {
 	if err := w.before(); err != nil {
 		return 0, err
 	}
-	return w.Write(b)
+	return w.ResponseWriter.Write(b)
 }
